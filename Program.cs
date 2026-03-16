@@ -23,11 +23,13 @@ namespace DimensionalCampaignCalculator
 
                 Console.WriteLine("""
                 Please type a command:
-                    1 - Hit with a weapon
-                    2 - Hit with a spell
-                    3 - Damage with a weapon
-                    4 - Damage with a spell
-                    5 - Quit
+                    1 - Make a skill check
+                    2 - Hit with a weapon
+                    3 - Hit with a spell
+                    4 - Damage with a weapon
+                    5 - Damage with a spell
+                    6 - Heal a target
+                    7 - Quit
                 """);
 
                 Console.WriteLine();
@@ -45,11 +47,50 @@ namespace DimensionalCampaignCalculator
                 switch (command)
                 {
 
-                    // hit with a weapon
                     case 1:
+                    { 
+                        
+                        int roll = Calculator.RollDice(1, 20);
+                        Console.WriteLine($"You rolled {roll}");
+
+                        if (roll == 20)
+                        { 
+                            
+                            Console.WriteLine("Natural 20! Critical hit.");
+                            Console.WriteLine("You gain 2 free effort to spend.");
+                            
+                        }
+
+                        int statBonus = ReadInt("Associated stat bonus: ");
+                        int effort = ReadInt("Effort spent: ");
+                        int edge = ReadInt("Edge bonus: ");
+                        int training = ReadInt("Training bonus: ");
+
+                        int result = Calculator.SkillCheck
+                        (
+                        
+                            roll,
+                            statBonus,
+                            effort,
+                            edge,
+                            training
+                            
+                        );
+
+                        Console.WriteLine($"Skill check: {result}");
+                        Console.WriteLine("\nPress Enter to clear result and continue...");
+                        Console.ReadLine();
+                        Console.Clear();
+                        break;
+
+                    } // end of case 1
+
+                    // hit with a weapon
+                    case 2:
                     {
 
                         int roll = Calculator.RollDice(1, 20);
+                        Console.WriteLine($"You rolled {roll}");
 
                         if (roll == 20)
                         { 
@@ -62,10 +103,10 @@ namespace DimensionalCampaignCalculator
                         int statBonus = ReadInt("Associated stat bonus: ");
                         int pEffort = ReadInt("Physical effort spent: ");
                         int edge = ReadInt("Edge bonus: ");
+                        int tEffort = ReadInt("Tactical effort spent: ");
                         int training = ReadInt("Training bonus: ");
                         int enchant = ReadInt("Weapon enchantment bonus: ");
-                        int buffs = ReadInt("Buff bonus: ");
-
+                        
                         int result = Calculator.WeaponToHit
                         (
 
@@ -73,10 +114,10 @@ namespace DimensionalCampaignCalculator
                             statBonus,
                             pEffort,
                             edge,
+                            tEffort,
                             training,
-                            enchant,
-                            buffs
-
+                            enchant
+                            
                         );
 
                         bool heroicActive = ReadYesNo("Is Heroic Presence active? (y/n): ");
@@ -88,13 +129,14 @@ namespace DimensionalCampaignCalculator
                         Console.Clear();
                         break;
 
-                    } // end of case 1
+                    } // end of case 2
                     
                     // hit with a spell
-                    case 2:
+                    case 3:
                     {
 
                         int roll = Calculator.RollDice(1, 20);
+                        Console.WriteLine($"You rolled {roll}");
 
                         if (roll == 20)
                         { 
@@ -107,10 +149,11 @@ namespace DimensionalCampaignCalculator
                         int statBonus = ReadInt("Associated stat bonus: ");
                         int mEffort = ReadInt("Mental effort spent: ");
                         int edge = ReadInt("Edge bonus: ");
+                        int sEffort = ReadInt("Special effort spent: ");
+                        int aEffort = ReadInt("Bonus armor effort spent: ");
                         int training = ReadInt("Training bonus: ");
                         int spellFocus = ReadInt("Spell focus bonus: ");
-                        int buffs = ReadInt("Buff bonus: ");
-
+                        
                         bool wildMagicActive = ReadYesNo("Is Wild Magic active? (y/n): ");
 
                         int wildMagicEffects = 0;
@@ -123,9 +166,10 @@ namespace DimensionalCampaignCalculator
                             statBonus,
                             mEffort,
                             edge,
+                            sEffort,
+                            aEffort,
                             training,
                             spellFocus,
-                            buffs,
                             wildMagicActive,
                             wildMagicEffects
                             
@@ -140,10 +184,10 @@ namespace DimensionalCampaignCalculator
                         Console.Clear();
                         break;
                     
-                    } // end of case 2
+                    } // end of case 3
                     
                     // damage with a weapon
-                    case 3:
+                    case 4:
                     {
 
                         int numOfDice = ReadInt("Number of weapon dice: ");
@@ -153,7 +197,6 @@ namespace DimensionalCampaignCalculator
                         int tEffort = ReadInt("Tactical effort spent: ");
                         int statBonus = ReadInt("Associated stat bonus: ");
                         int enchant = ReadInt("Enchantment bonus: ");
-                        int buffs = ReadInt("Buff bonus: ");
 
                         bool magusActive = ReadYesNo("Is Magus active? (y/n): ");
                         
@@ -177,8 +220,9 @@ namespace DimensionalCampaignCalculator
 
                         }
 
+                        bool bRageActive = false;
                         bool rageActive = ReadYesNo("Is Rage active? (y/n): ");
-                        bool bRageActive = ReadYesNo("Is Blind Rage active? (y/n): ");
+                        if (rageActive) { bRageActive = ReadYesNo("Is Blind Rage active? (y/n): "); }
 
                         int result = Calculator.WeaponToDamage
                         (
@@ -190,7 +234,6 @@ namespace DimensionalCampaignCalculator
                             tEffort,
                             statBonus,
                             enchant,
-                            buffs,
                             magusActive,
                             mEffort,
                             mEdge,
@@ -208,21 +251,21 @@ namespace DimensionalCampaignCalculator
                         Console.Clear();
                         break;    
                         
-                    } // end of case 3
+                    } // end of case 4
 
                     // damage with a spell
-                    case 4:
+                    case 5:
                     {
                         
                         int numOfDice = ReadInt("Number of spell dice: ");
                         int baseSpellDie = ReadInt("Spell die size (4, 6, 8, 10, etc.): ");
                         int mEffort = ReadInt("Mental effort spent: ");
+                        int aEffort = ReadInt("Bonus armor effort spent: "); 
                         int edge = ReadInt("Edge bonus: ");
+                        int sEffort = ReadInt("Special effort spent: ");
                         int statBonus = ReadInt("Associated stat bonus: ");
-                        int buffs = ReadInt("Buff bonus: "); 
 
                         bool wildMagicActive = ReadYesNo("Is Wild Magic active? (y/n): ");
-
                         int wildMagicEffects = 0;
                         if (wildMagicActive) { wildMagicEffects = ReadInt("How many Wild Magic effects have been accepted? "); }
 
@@ -233,8 +276,9 @@ namespace DimensionalCampaignCalculator
                             baseSpellDie,
                             mEffort,
                             edge,
+                            sEffort,
+                            aEffort,
                             statBonus,
-                            buffs,
                             wildMagicActive,
                             wildMagicEffects
                             
@@ -246,16 +290,58 @@ namespace DimensionalCampaignCalculator
                         Console.Clear();
                         break;
 
-                    } // end of case 4
+                    } // end of case 5
 
+                    // heal
+                    case 6:
+                    {
+                        
+                        int numOfDice = ReadInt("Number of catalyst dice: ");
+                        int baseHealDie = ReadInt("Heal die size (4, 6, 8, 10, etc.): ");
+                        int mEffort = ReadInt("Mental effort spent: ");
+                        int statBonus = ReadInt("Associated stat bonus: ");
+
+                        bool healingFocusActive = false;
+                        int healingFocusRanks = 0;
+
+                        if (mEffort > 0)
+                        { 
+                        
+                            healingFocusActive = ReadYesNo("Is Healing Focus being used? (y/n): ");
+                            if (healingFocusActive) { healingFocusRanks = ReadInt("How many ranks of Healing Focus do you have? "); }
+
+                        }
+
+                        int result = Calculator.Heal
+                        (
+                            
+                            numOfDice,
+                            baseHealDie,
+                            mEffort,
+                            statBonus,
+                            healingFocusActive,
+                            healingFocusRanks
+                            
+                        );
+
+                        Console.WriteLine($"Heal: {result}");
+                        Console.WriteLine("\nPress Enter to clear result and continue...");
+                        Console.ReadLine();
+                        Console.Clear();
+                        break;
+
+                    } // end of case 6
+                    
                     // quit
-                    case 5:
+                    case 7:
+                        
                         Console.Clear();
                         Console.WriteLine("Quitting program. Goodbye!");
                         exit = true;
                         break;
 
                     default:
+                        
                         Console.WriteLine("Invalid command. Please only enter an integer between 1-5.");
                         break;
 

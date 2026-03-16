@@ -8,9 +8,12 @@ namespace DimensionalCampaignCalculator
 {
 
     /* Useful information:
+     * effort = any effort
      * pEffort = physical effort
      * mEffort = mental effort
      * tEffort = tactical effort
+     * sEffort = special effort
+     * aEffort = armor effort
      */
 
     internal class Calculator
@@ -39,24 +42,31 @@ namespace DimensionalCampaignCalculator
 
         } // end of RollDice
 
-        public static int WeaponToHit(int roll, int statBonus, int pEffort, int edge, int training, int enchant, int buffs) 
+        public static int SkillCheck(int roll, int statBonus, int effort, int edge, int training) 
+        {
+
+            return roll + statBonus * (effort + edge + training + 1);
+        
+        } // end of SkillCheck
+
+        public static int WeaponToHit(int roll, int statBonus, int pEffort, int edge, int tEffort, int training, int enchant) 
         {
             
-            return roll + statBonus * (pEffort + edge + training + 1) + enchant + buffs;
+            return roll + statBonus * (pEffort + edge + tEffort + training + 1) + enchant;
         
         } // end of WeaponToHit
 
-        public static int SpellToHit(int roll, int statBonus, int mEffort, int edge, int training, int spellFocus, int buffs, bool wildMagicActive, int wildMagicEffects)
+        public static int SpellToHit(int roll, int statBonus, int mEffort, int edge, int sEffort, int aEffort, int training, int spellFocus, bool wildMagicActive, int wildMagicEffects)
         {
 
             // wild magic
             int wildMagicBonus = WildMagicBonus(wildMagicActive, wildMagicEffects);
 
-            return roll + statBonus * (mEffort + edge + training + wildMagicBonus + 1) + spellFocus + buffs;
+            return roll + statBonus * (mEffort + edge + sEffort + aEffort + training + wildMagicBonus + 1) + spellFocus;
         
         } // end of SpellToHit
 
-        public static int WeaponToDamage(int numOfDice, int baseWeaponDie, int pEffort, int edge, int tEffort, int statBonus, int enchant, int buffs, 
+        public static int WeaponToDamage(int numOfDice, int baseWeaponDie, int pEffort, int edge, int tEffort, int statBonus, int enchant, 
             bool magusActive, int mEffort, int mEdge, int mageStatBonus, bool wildMagicActive, int wildMagicEffects, bool rageActive, bool bRageActive) 
         {
 
@@ -77,24 +87,42 @@ namespace DimensionalCampaignCalculator
             int wildMagic = WildMagicBonus(wildMagicActive, wildMagicEffects);
             int wildMagicBonus = RollDice(wildMagic, baseWeaponDie);
 
-            return weaponDiceDamage + pEffortBonus + edgeBonus + tEffortBonus + statBonus + enchant + buffs + rageBonus + bRageBonus + magusBonus + wildMagicBonus;
+            return weaponDiceDamage + pEffortBonus + edgeBonus + tEffortBonus + statBonus + enchant + rageBonus + bRageBonus + magusBonus + wildMagicBonus;
         
         } // end of WeaponToDamage
 
-        public static int SpellToDamage(int numOfDice, int baseSpellDie, int mEffort, int edge, int statBonus, int buffs, bool wildMagicActive, int wildMagicEffects)
+        public static int SpellToDamage(int numOfDice, int baseSpellDie, int mEffort, int edge, int sEffort, int aEffort, int statBonus, bool wildMagicActive, int wildMagicEffects)
         {
 
             int spellDiceDamage = RollDice(numOfDice, baseSpellDie);
             int mEffortBonus = RollDice(mEffort, baseSpellDie);
             int edgeBonus = RollDice(edge, baseSpellDie);
+            int sEffortBonus = RollDice(sEffort, baseSpellDie);
+            int aEffortBonus = RollDice(aEffort, baseSpellDie);
 
             // wild magic
             int wildMagic = WildMagicBonus(wildMagicActive, wildMagicEffects);
             int wildMagicBonus = RollDice(wildMagic, baseSpellDie);
 
-            return spellDiceDamage + mEffortBonus + edgeBonus + buffs + statBonus + wildMagicBonus;
+            return spellDiceDamage + mEffortBonus + edgeBonus + sEffortBonus + aEffortBonus + statBonus +  wildMagicBonus;
         
         } // end of SpellToDamage
+
+        public static int Heal(int numOfDice, int baseHealDie, int mEffort, int statBonus, bool healingFocusActive, int healingFocusRanks) 
+        {
+
+            // healing focus
+            int healingFocus = HealingFocus(healingFocusActive, healingFocusRanks);
+            int healingFocusBonus = RollDice(healingFocus, baseHealDie);
+
+            int baseHeal = RollDice(numOfDice, baseHealDie);
+            int healRoll = RollDice(mEffort, baseHealDie);
+
+            int healTotal = baseHeal + healRoll + statBonus + healingFocusBonus;
+            
+            return healTotal;
+        
+        } // end of Heal
 
         // rage feat helper
         public static int RageBonus(bool rageActive, int baseWeaponDie) 
@@ -155,5 +183,20 @@ namespace DimensionalCampaignCalculator
             return 0;
         
         } // end of WildMagicBonus
+
+        // healing focus feat helper
+        public static int HealingFocus(bool healingFocusActive, int healingFocusRanks) 
+        { 
+        
+            if (healingFocusActive) 
+            {
+
+                return healingFocusRanks;
+            
+            }
+
+            return 0;
+        
+        } // end of HealingFocus
     } // end of Calculator class
 } // end of namespace
